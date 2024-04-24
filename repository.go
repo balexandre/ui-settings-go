@@ -56,12 +56,12 @@ func (r *UiSettingRepo) FindEntriesByUserId(merchantCode string, userId uint64) 
 }
 
 func (r *UiSettingRepo) UpdateEntryValueByName(merchantCode string, name string, value any) (int64, error) {
-	result, err := r.MongoCollection.UpdateOne(context.Background(),
-		bson.D{
-			{Key: "name", Value: name},
-			{Key: "merchant_code", Value: merchantCode},
-		},
-		bson.D{{Key: "$set", Value: updatedEntry}})
+	filter := bson.D{
+		{Key: "name", Value: name},
+		{Key: "merchant_code", Value: merchantCode},
+	}
+	update := bson.D{{Key: "$set", Value: bson.D{{Key: "value", Value: value}}}}
+	result, err := r.MongoCollection.UpdateOne(context.Background(), filter, update)
 	if err != nil {
 		return 0, err
 	}
